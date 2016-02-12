@@ -31,11 +31,14 @@ private:
 	bool m_Exit;
 	std::string m_FileName;
 
+	UIWindow *m_Window;
 	UITextInput *m_NameInput;
 	UITextInput *m_ColorRInput;
 	UITextInput *m_ColorGInput;
 	UITextInput *m_ColorBInput;
 	UITextInput *m_ColorAInput;
+	UIColorPicker *m_ColorPicker;
+	UIColorBox *m_ColorBox;
 	UIButton *m_CloseButton;
 	UIButton *m_SpinButton;
 	UIButton *m_FlipButton;

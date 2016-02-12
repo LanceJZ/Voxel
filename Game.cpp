@@ -53,11 +53,6 @@ Game::Game(PolycodeView *view) : EventHandler()
 
 	pBoxs->addChild(pCurser);
 
-	//ScenePrimitive *box;
-	//box = new ScenePrimitive(ScenePrimitive::TYPE_BOX, 1, 1, 1);
-	//box->setMaterialByName("Default");
-	//pBoxs->addChild(box);
-
 	SceneLight *light = new SceneLight(SceneLight::POINT_LIGHT, pScene, 12250);
 	light->setPosition(50, 70, 80);
 	light->setLightColor(1, 1, 1);
@@ -75,7 +70,7 @@ Game::Game(PolycodeView *view) : EventHandler()
 
 	cameraRotation = 0.0;
 
-	//UI
+	//UI ---------------------------------------------------------------------------------
 	CoreServices::getInstance()->getResourceManager()->addArchive("UIThemes/UIThemes.pak");
 	CoreServices::getInstance()->getConfig()->loadConfig("Polycode", "UIThemes/dark/theme.xml");
 
@@ -88,125 +83,95 @@ Game::Game(PolycodeView *view) : EventHandler()
 	SceneLabel::defaultSnapToPixels = true;
 	SceneLabel::createMipmapsForLabels = false;
 
-	UIWindow *window = new UIWindow("Voxel Edit", 300, 250);
-	scene2D->addChild(window);
+	m_Window = new UIWindow("Voxel Edit", 300, 250);
+	scene2D->addChild(m_Window);
 
 	UILabel *name = new UILabel("Enter File Name:", 14, "sans", Label::ANTIALIAS_FULL);
-	name->setPosition(window->padding, window->topPadding);
-	window->addChild(name);
+	name->setPosition(m_Window->padding, m_Window->topPadding);
+	m_Window->addChild(name);
 
 	m_NameInput = new UITextInput(false, 200, 12);
-	m_NameInput->setPosition(window->padding, window->topPadding + 20);
-	window->addChild(m_NameInput);
-
-	UILabel *color = new UILabel("Color in percent:", 14, "sans", Label::ANTIALIAS_FULL);
-	color->setPosition(window->padding, window->topPadding + 50);
-	window->addChild(color);
-
-	UILabel *red = new UILabel("Red", 14, "sans", Label::ANTIALIAS_FULL);
-	red->setPosition(window->padding, window->topPadding + 75);
-	window->addChild(red);
-
-	m_ColorRInput = new UITextInput(false, 60, 12);
-	m_ColorRInput->setPosition(window->padding + 60, window->topPadding + 75);
-	window->addChild(m_ColorRInput);
-
-	UILabel *green = new UILabel("Green", 14, "sans", Label::ANTIALIAS_FULL);
-	green->setPosition(window->padding, window->topPadding + 100);
-	window->addChild(green);
-
-	m_ColorGInput = new UITextInput(false, 60, 12);
-	m_ColorGInput->setPosition(window->padding + 60, window->topPadding + 100);
-	window->addChild(m_ColorGInput);
-
-	UILabel *blue = new UILabel("Blue", 14, "sans", Label::ANTIALIAS_FULL);
-	blue->setPosition(window->padding, window->topPadding + 125);
-	window->addChild(blue);
-
-	m_ColorBInput = new UITextInput(false, 60, 12);
-	m_ColorBInput->setPosition(window->padding + 60, window->topPadding + 125);
-	window->addChild(m_ColorBInput);
-
-	UILabel *alpha = new UILabel("Alpha", 14, "sans", Label::ANTIALIAS_FULL);
-	alpha->setPosition(window->padding, window->topPadding + 150);
-	window->addChild(alpha);
-
-	m_ColorAInput = new UITextInput(false, 60, 12);
-	m_ColorAInput->setPosition(window->padding + 60, window->topPadding + 150);
-	window->addChild(m_ColorAInput);
-
-	m_ColorRInput->setText("100");
-	m_ColorGInput->setText("100");
-	m_ColorBInput->setText("100");
-	m_ColorAInput->setText("100");
+	m_NameInput->setPosition(m_Window->padding, m_Window->topPadding + 20);
+	m_Window->addChild(m_NameInput);
 
 	m_LoadButton = new UIButton("Load", 60);
-	m_LoadButton->setPosition(window->padding + 225, window->topPadding + 30);
+	m_LoadButton->setPosition(m_Window->padding + 225, m_Window->topPadding + 30);
 	m_LoadButton->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_LoadButton);
+	m_Window->addChild(m_LoadButton);
 
 	m_SaveButton = new UIButton("Save", 60);
-	m_SaveButton->setPosition(window->padding + 225, window->topPadding);
+	m_SaveButton->setPosition(m_Window->padding + 225, m_Window->topPadding);
 	m_SaveButton->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_SaveButton);
+	m_Window->addChild(m_SaveButton);
 
 	m_CloseButton = new UIButton("Close", 60);
-	m_CloseButton->setPosition(window->padding, window->getHeight() - window->topPadding - 20);
+	m_CloseButton->setPosition(m_Window->padding, m_Window->getHeight() - m_Window->topPadding - 20);
 	m_CloseButton->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_CloseButton);
+	m_Window->addChild(m_CloseButton);
 
 	m_SpinButton = new UIButton("Spin", 60);
-	m_SpinButton->setPosition(window->padding + 80, window->getHeight() - window->topPadding - 20);
+	m_SpinButton->setPosition(m_Window->padding + 80, m_Window->getHeight() - m_Window->topPadding - 20);
 	m_SpinButton->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_SpinButton);
+	m_Window->addChild(m_SpinButton);
 
 	m_FlipButton = new UIButton("Flip", 60);
-	m_FlipButton->setPosition(window->padding + 150, window->getHeight() - window->topPadding - 20);
+	m_FlipButton->setPosition(m_Window->padding + 150, m_Window->getHeight() - m_Window->topPadding - 20);
 	m_FlipButton->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_FlipButton);
+	m_Window->addChild(m_FlipButton);
 
 	m_AddBox = new UIButton("Add", 50);
-	m_AddBox->setPosition(window->padding + 170, window->topPadding + 60);
+	m_AddBox->setPosition(m_Window->padding + 170, m_Window->topPadding + 60);
 	m_AddBox->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_AddBox);
+	m_Window->addChild(m_AddBox);
 
 	m_RemoveBox = new UIButton("Remove", 70);
-	m_RemoveBox->setPosition(window->padding + 230, window->topPadding + 60);
+	m_RemoveBox->setPosition(m_Window->padding + 230, m_Window->topPadding + 60);
 	m_RemoveBox->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_RemoveBox);
+	m_Window->addChild(m_RemoveBox);
+
+	m_ColorPicker = new UIColorPicker();
+	m_ColorPicker->setPosition(450, 0);
+	m_ColorPicker->setContinuous(false);
+	scene2D->addChild(m_ColorPicker);
+
+	m_ColorBox = new UIColorBox(m_ColorPicker, Color(1.0, 1.0, 1.0, 1.0), 50, 50);
+	m_ColorBox->setBoxColor(Color(1.0, 1.0, 1.0, 1.0));
+	m_ColorBox->setPosition(m_Window->padding + 140, m_Window->topPadding + 100);
+	m_ColorBox->addEventListener(this, UIEvent::CHANGE_EVENT);
+	m_Window->addChild(m_ColorBox);
 
 	Number moveButtonsY = 100;
 	Number moveButtonsX = 200;
 
 	m_PlusY = new UIButton("Y+", 23);
-	m_PlusY->setPosition(window->padding + moveButtonsX + 40, window->topPadding + moveButtonsY + 10);
+	m_PlusY->setPosition(m_Window->padding + moveButtonsX + 40, m_Window->topPadding + moveButtonsY + 10);
 	m_PlusY->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_PlusY);
+	m_Window->addChild(m_PlusY);
 
 	m_PlusX = new UIButton("X+", 23);
-	m_PlusX->setPosition(window->padding + moveButtonsX + 70, window->topPadding + moveButtonsY + 40);
+	m_PlusX->setPosition(m_Window->padding + moveButtonsX + 70, m_Window->topPadding + moveButtonsY + 40);
 	m_PlusX->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_PlusX);
+	m_Window->addChild(m_PlusX);
 
 	m_PlusZ = new UIButton("Z+", 23);
-	m_PlusZ->setPosition(window->padding + moveButtonsX + 80, window->topPadding + moveButtonsY + 80);
+	m_PlusZ->setPosition(m_Window->padding + moveButtonsX + 80, m_Window->topPadding + moveButtonsY + 80);
 	m_PlusZ->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_PlusZ);
+	m_Window->addChild(m_PlusZ);
 
 	m_MinusY = new UIButton("Y-", 23);
-	m_MinusY->setPosition(window->padding + moveButtonsX + 40, window->topPadding + moveButtonsY + 70);
+	m_MinusY->setPosition(m_Window->padding + moveButtonsX + 40, m_Window->topPadding + moveButtonsY + 70);
 	m_MinusY->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_MinusY);
+	m_Window->addChild(m_MinusY);
 
 	m_MinusX = new UIButton("X-", 23);
-	m_MinusX->setPosition(window->padding + moveButtonsX + 10, window->topPadding + moveButtonsY + 40);
+	m_MinusX->setPosition(m_Window->padding + moveButtonsX + 10, m_Window->topPadding + moveButtonsY + 40);
 	m_MinusX->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_MinusX);
+	m_Window->addChild(m_MinusX);
 
 	m_MinusZ = new UIButton("Z-", 23);
-	m_MinusZ->setPosition(window->padding + moveButtonsX, window->topPadding + moveButtonsY);
+	m_MinusZ->setPosition(m_Window->padding + moveButtonsX, m_Window->topPadding + moveButtonsY);
 	m_MinusZ->addEventListener(this, UIEvent::CLICK_EVENT);
-	window->addChild(m_MinusZ);
+	m_Window->addChild(m_MinusZ);
 
 	//shape.boxColor = Color(0.8, 0.3, 0.5, 1.0);
 	//shape.Position = Vector3(0.0, 0.0, 0.0);
@@ -234,9 +199,16 @@ Game::~Game()
 
 void Game::handleEvent(Event * events)
 {
+	if (events->getEventCode() == UIEvent::CHANGE_EVENT)
+	{
+		if (events->getDispatcher() == m_ColorBox)
+		{
+			
+		}
+	}
+
 	if (events->getEventCode() == UIEvent::CLICK_EVENT)
 	{
-		InputEvent *inputEvent = (InputEvent*)events;
 
 		if (events->getDispatcher() == m_CloseButton)
 		{
@@ -287,15 +259,7 @@ void Game::handleEvent(Event * events)
 				box = new ScenePrimitive(ScenePrimitive::TYPE_BOX, 1, 1, 1);
 				box->setMaterialByName("Default");
 				box->setPosition(pCurser->getPosition());
-
-				Color boxColor;
-
-				boxColor.r = m_ColorRInput->getText().toNumber() * 0.01;
-				boxColor.g = m_ColorGInput->getText().toNumber() * 0.01;
-				boxColor.b = m_ColorBInput->getText().toNumber() * 0.01;
-				boxColor.a = m_ColorAInput->getText().toNumber() * 0.01;
-
-				box->setColor(boxColor);
+				box->setColor(m_ColorBox->getSelectedColor());
 				box->id = std::to_string(m_Boxs.size());
 				pBoxs->addChild(box);
 				m_Boxs.push_back(box);
@@ -353,6 +317,11 @@ void Game::handleEvent(Event * events)
 		{
 			pBoxs->Roll(180);
 		}
+	}
+
+	if (events->getDispatcher() == m_Window)
+	{
+		m_Window->showWindow();
 	}
 
 	if (events->getDispatcher() == pCore->getInput())
