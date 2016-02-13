@@ -14,7 +14,7 @@ std::unique_ptr<main> pMain;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	PolycodeView *view = new PolycodeView(hInstance, nCmdShow, L"Voxel Alpha 1.0");
+	PolycodeView *view = new PolycodeView(hInstance, nCmdShow, L"Voxel Alpha 1.2");
 
 #if defined(_DEBUG)
 	pGame = new Game(view);

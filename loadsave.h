@@ -26,9 +26,11 @@ public:
 	~LoadSave(void);
 
 	void SaveEntity(std::vector<Voxel> entity, std::string fileName);
-	std::vector<Voxel> LoadEntity(std::string fileName);
+	std::vector<ScenePrimitive*> ReadVoxEntity(std::string fileName);
 
 private:
 	Voxel shape;
+
+	std::vector<Voxel> LoadEntity(std::string fileName);
 };
 

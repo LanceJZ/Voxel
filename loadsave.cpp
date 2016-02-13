@@ -31,14 +31,20 @@ void LoadSave::SaveEntity(std::vector<Voxel> VOXshape, std::string fileName)
 		
 		voxColor.push_back(std::make_pair("", crow));
 	
-		Number parray[3] = { VOXshape[vox].Position.x, VOXshape[vox].Position.y, VOXshape[vox].Position.z };
+		int parray[3] = { int(VOXshape[vox].Position.x), int(VOXshape[vox].Position.y),
+			int(VOXshape[vox].Position.z) };
 	
 		ptree::ptree prow;
 	
 		for (int p = 0; p < 3; p++)
 		{
 			ptree::ptree cell;
-			cell.put_value(parray[p]);
+			
+			if (parray[p] != 0)
+				cell.put_value(parray[p] + (parray[p] * 0.01));
+			else
+				cell.put_value(0);
+
 			prow.push_back(std::make_pair("", cell));
 		}
 		voxPosition.push_back(std::make_pair("", prow));
@@ -104,4 +110,27 @@ std::vector<Voxel> LoadSave::LoadEntity(std::string fileName)
 	}
 
 	return VOXshape;
+}
+
+std::vector<ScenePrimitive*> LoadSave::ReadVoxEntity(std::string fileName)
+{
+	std::vector<Voxel> shapeRead;
+	std::vector<ScenePrimitive*> boxs;
+
+	shapeRead.clear();
+	shapeRead = LoadEntity(fileName + ".json");
+
+	ScenePrimitive *box;
+
+	for (int vox = 0; vox < shapeRead.size(); vox++)
+	{
+		box = new ScenePrimitive(ScenePrimitive::TYPE_BOX, 1, 1, 1);
+		box->setMaterialByName("Default");
+		box->setPosition(shapeRead[vox].Position);
+		box->setColor(shapeRead[vox].boxColor);
+		box->id = std::to_string(vox);
+		boxs.push_back(box);
+	}
+
+	return boxs;
 }
