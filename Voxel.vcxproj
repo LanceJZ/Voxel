@@ -107,7 +107,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>
       </SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Polycode_New\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Boost;$(SolutionDir)..\Polycode_New\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -132,12 +132,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="loadsave.h" />
+    <ClInclude Include="Load.h" />
+    <ClInclude Include="Save.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Common.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="loadsave.cpp" />
+    <ClCompile Include="Load.cpp" />
+    <ClCompile Include="Save.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

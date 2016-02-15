@@ -3,7 +3,7 @@
 Game::Game(PolycodeView *view) : EventHandler()
 {
 	m_Exit = false;
-	pCore = new POLYCODE_CORE(view, 800, 600, false, true, 0, 0, 90, 0, true);
+	pCore = new POLYCODE_CORE(view, 1200, 800, false, true, 0, 0, 90, 0, true);
 	pScene = new Scene(Scene::SCENE_3D);
 	pCore->getInput()->addEventListener(this, InputEvent::EVENT_KEYDOWN);
 
@@ -69,7 +69,6 @@ Game::Game(PolycodeView *view) : EventHandler()
 	pScene->addLight(light);
 
 	m_CameraRotation = 0.0;
-	m_CameraPosition = Vector3(-5, 7, 10);
 
 	//UI ---------------------------------------------------------------------------------
 	CoreServices::getInstance()->getResourceManager()->addArchive("UIThemes/UIThemes.pak");
@@ -84,7 +83,7 @@ Game::Game(PolycodeView *view) : EventHandler()
 	SceneLabel::defaultSnapToPixels = true;
 	SceneLabel::createMipmapsForLabels = false;
 
-	m_Window = new UIWindow("Voxel Edit", 300, 250);
+	m_Window = new UIWindow("Voxel Edit", 350, 250);
 	scene2D->addChild(m_Window);
 
 	UILabel *name = new UILabel("Enter File Name:", 14, "sans", Label::ANTIALIAS_FULL);
@@ -140,7 +139,7 @@ Game::Game(PolycodeView *view) : EventHandler()
 	m_Window->addChild(m_AddBox);
 
 	m_RemoveBox = new UIButton("Remove", 70);
-	m_RemoveBox->setPosition(m_Window->padding + 230, m_Window->topPadding + 60);
+	m_RemoveBox->setPosition(m_Window->padding + 220, m_Window->topPadding + 60);
 	m_RemoveBox->addEventListener(this, UIEvent::CLICK_EVENT);
 	m_Window->addChild(m_RemoveBox);
 
@@ -165,8 +164,8 @@ Game::Game(PolycodeView *view) : EventHandler()
 	m_ColorBox->setPosition(m_Window->padding + 140, m_Window->topPadding + 100);
 	m_Window->addChild(m_ColorBox);
 
-	Number moveButtonsY = 115;
-	Number moveButtonsX = 200;
+	Number moveButtonsX = 230;
+	Number moveButtonsY = 125;
 
 	m_PlusY = new UIButton("Y+", 23);
 	m_PlusY->setPosition(m_Window->padding + moveButtonsX + 40, m_Window->topPadding + moveButtonsY + 10);
@@ -215,7 +214,23 @@ Game::Game(PolycodeView *view) : EventHandler()
 	m_ResetButton->addEventListener(this, UIEvent::CLICK_EVENT);
 	m_Window->addChild(m_ResetButton);
 
+	m_TopButton = new UIButton("Top", 50);
+	m_TopButton->setPosition(m_Window->padding + 300, m_Window->topPadding + 70);
+	m_TopButton->addEventListener(this, UIEvent::CLICK_EVENT);
+	m_Window->addChild(m_TopButton);
+
+	m_SideButton = new UIButton("Side", 50);
+	m_SideButton->setPosition(m_Window->padding + 300, m_Window->topPadding + 95);
+	m_SideButton->addEventListener(this, UIEvent::CLICK_EVENT);
+	m_Window->addChild(m_SideButton);
+
+	m_FrontButton = new UIButton("Front", 50);
+	m_FrontButton->setPosition(m_Window->padding + 300, m_Window->topPadding + 120);
+	m_FrontButton->addEventListener(this, UIEvent::CLICK_EVENT);
+	m_Window->addChild(m_FrontButton);
+
 	UpdateXYZ();
+	Reset();
 
 	//shape.boxColor = Color(0.8, 0.3, 0.5, 1.0);
 	//shape.Position = Vector3(0.0, 0.0, 0.0);
@@ -245,6 +260,29 @@ void Game::handleEvent(Event * events)
 {
 	if (events->getEventCode() == UIEvent::CLICK_EVENT)
 	{
+		if (events->getDispatcher() == m_TopButton)
+		{
+			Reset();
+			m_CameraPosition.x = 0;
+			m_CameraPosition.y = 0;
+			pBoxs->Pitch(90);
+			pBoxs->Roll(90);
+		}
+
+		if (events->getDispatcher() == m_SideButton)
+		{
+			Reset();
+			m_CameraPosition.x = 0;
+			m_CameraPosition.y = 0;			
+		}
+
+		if (events->getDispatcher() == m_FrontButton)
+		{
+			Reset();
+			m_CameraPosition.x = 0;
+			m_CameraPosition.y = 0;
+			pBoxs->Yaw(-90);
+		}
 
 		if (events->getDispatcher() == m_CloseButton)
 		{
@@ -334,22 +372,19 @@ void Game::handleEvent(Event * events)
 
 		if (events->getDispatcher() == m_ResetButton)
 		{
-			pBoxs->setRotationEuler(0);
-			m_RotateX->setChecked(false);
-			m_RotateY->setChecked(false);
-			m_RotateZ->setChecked(false);
+			Reset();
 		}
 
 		if (events->getDispatcher() == m_ZoomIn)
 		{
 			if (m_CameraPosition.z > 5)
-				m_CameraPosition.z--;
+				m_CameraPosition.z-=3;
 		}
 
 		if (events->getDispatcher() == m_ZoomOut)
 		{
 			if (m_CameraPosition.z < 100)
-				m_CameraPosition.z++;
+				m_CameraPosition.z+=3;
 		}
 	}
 
@@ -379,7 +414,7 @@ void Game::handleEvent(Event * events)
 			UpdateXYZ();
 		}
 
-		if (inputEvent->keyCode() == KEY_KP_PLUS)
+		if (inputEvent->keyCode() == KEY_PAGEDOWN)
 		{
 			pCurser->setPositionZ(pCurser->getPosition().z + move);
 			UpdateXYZ();
@@ -397,15 +432,20 @@ void Game::handleEvent(Event * events)
 			UpdateXYZ();
 		}
 
-		if (inputEvent->keyCode() == KEY_KP_MINUS)
+		if (inputEvent->keyCode() == KEY_PAGEUP)
 		{
 			pCurser->setPositionZ(pCurser->getPosition().z - move);
 			UpdateXYZ();
 		}
 
-		if (inputEvent->keyCode() == KEY_SPACE)
+		if (inputEvent->keyCode() == KEY_LCTRL)
 		{
 			AddBox();
+		}
+
+		if (inputEvent->keyCode() == KEY_RCTRL)
+		{
+			RemoveBox();
 		}
 	}
 }
@@ -443,14 +483,12 @@ void Game::ReadVoxEntity(void)
 	}
 
 	m_Boxs.clear();
-	m_Boxs = LoadSave::ReadVoxEntity(m_FileName);
-
-	for (int box = 0; box < m_Boxs.size(); box++)
-	{
-		pBoxs->addChild(m_Boxs[box]);
-	}
+	m_Boxs = Load::ReadBoxes(m_FileName);
+	
+	Load::ReadVoxelEntity(pBoxs, m_Boxs);
 
 	pCurser->setPosition(0);
+	UpdateXYZ();
 }
 
 void Game::UpdateXYZ(void)
@@ -523,7 +561,7 @@ void Game::Save(void)
 		}
 
 		m_FileName = m_NameInput->getText().c_str();
-		SaveEntity(m_ShapeSave, m_FileName);
+		Save::WriteEntity(m_ShapeSave, m_FileName);
 	}
 }
 
@@ -536,6 +574,15 @@ void Game::ColorGrab(void)
 			m_ColorBox->setBoxColor(m_Boxs[vox]->color);
 		}
 	}
+}
+
+void Game::Reset(void)
+{
+	m_CameraPosition = Vector3(-6, 8, 20);
+	pBoxs->setRotationEuler(0);
+	m_RotateX->setChecked(false);
+	m_RotateY->setChecked(false);
+	m_RotateZ->setChecked(false);
 }
 
 bool Game::CheckBoxMatch(Vector3 positionBox, Vector3 positionCursor)

@@ -1,5 +1,6 @@
 #pragma once
-#include "LoadSave.h"
+#include "Load.h"
+#include "Save.h"
 #include <Polycode.h>
 #include <PolycodeView.h>
 #include <PolycodeUI.h>
@@ -8,7 +9,7 @@
 namespace ptree = boost::property_tree;
 using namespace Polycode;
 
-class Game : public LoadSave, public EventHandler
+class Game : public Load, public Save, public EventHandler
 {
 public:
 	Game(PolycodeView *view);
@@ -59,6 +60,9 @@ private:
 	UIButton *m_MinusX;
 	UIButton *m_MinusY;
 	UIButton *m_MinusZ;
+	UIButton *m_TopButton;
+	UIButton *m_SideButton;
+	UIButton *m_FrontButton;
 	UICheckBox *m_RotateX;
 	UICheckBox *m_RotateY;
 	UICheckBox *m_RotateZ;
@@ -70,6 +74,7 @@ private:
 	void RemoveBox(void);
 	void Save(void);
 	void ColorGrab(void);
+	void Reset(void);
 
 	bool CheckBoxMatch(Vector3 positionBox, Vector3 positionCursor);
 };
